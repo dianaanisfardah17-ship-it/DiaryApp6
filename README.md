@@ -30,7 +30,7 @@ npm install
 npx expo start
 ```
 
-Setelah server jalan, pilih salah satu cara membuka aplikasi:
+Setelah server berjalan, pilih salah satu cara membuka aplikasi:
 
 | Target | Cara |
 |---|---|
@@ -50,15 +50,17 @@ Setelah server jalan, pilih salah satu cara membuka aplikasi:
 
 ## ✨ Fitur
 
-- **Home**: daftar diary, statistik (jumlah memori & favorit), pencarian, filter mood, dan tombol *Reset Filter*.
-- **Create**: form tambah diary (judul, tanggal `YYYY-MM-DD`, mood, isi cerita).
-- **Detail**: menampilkan isi diary lengkap dengan mood dan tombol favorit.
-- **Favorites**: daftar diary yang sudah di-like.
-- **Settings**: *Compact Mode* (mengubah tampilan kartu di Home), toggle *Notifications*, dan modal *About*.
+- **Home**: Menampilkan daftar diary, statistik jumlah memori dan favorit, pencarian, filter mood, serta tombol *Reset Filter*.
+- **Search**: Mencari diary berdasarkan kata kunci. Menggunakan `useRef` untuk mengontrol fokus kolom pencarian. Pengguna dapat menekan ikon pencarian untuk mengaktifkan kolom Search dan tombol X untuk menghapus kata pencarian sekaligus mengembalikan fokus ke kolom tersebut.
+- **Mood Filter**: Memfilter daftar diary berdasarkan mood yang dipilih.
+- **Create**: Form tambah diary yang berisi judul, tanggal (`YYYY-MM-DD`), mood, dan isi cerita.
+- **Detail**: Menampilkan isi diary secara lengkap dengan mood dan tombol favorit.
+- **Favorites**: Menampilkan daftar diary yang sudah di-like.
+- **Settings**: Menyediakan fitur *Compact Mode* untuk mengubah tampilan kartu di Home, toggle *Notifications*, dan modal *About*.
 
 ## 🗂️ Struktur Folder
 
-```
+```text
 diary-app6/
 ├── app/
 │   ├── _layout.tsx            # Root layout (DiaryProvider + Stack)
@@ -67,7 +69,7 @@ diary-app6/
 │   ├── modal.tsx              # Modal bawaan template Expo
 │   ├── (tabs)/
 │   │   ├── _layout.tsx        # Bottom tab navigation
-│   │   ├── index.tsx          # Home: search, filter mood, daftar diary
+│   │   ├── index.tsx          # Home: search, useRef, filter mood, daftar diary
 │   │   ├── favorites.tsx      # Daftar diary favorit
 │   │   ├── create.tsx         # Form tambah diary
 │   │   ├── settings.tsx       # Pengaturan (compact mode, notifikasi, About)
@@ -90,11 +92,12 @@ diary-app6/
 
 | Hook | Digunakan di | Fungsi dalam project |
 |---|---|---|
-| `useState` | `DiaryContext.tsx`, `useDiarySearch.ts`, `index.tsx`, `create.tsx`, `settings.tsx` | Menyimpan state lokal/global: daftar `entries`, `likedIds`, `compactMode`, `query`, `debouncedQuery`, `selectedMood`, `searchFocused` (fokus kolom pencarian), input form (`title`, `date`, `body`, `mood`, `focused`), toggle `notifications`, dan `aboutVisible` (modal About). |
-| `useEffect` | `useDiarySearch.ts` | Membuat **debounce** pencarian: `debouncedQuery` baru diperbarui 350 ms setelah user berhenti mengetik. *Cleanup function* (`clearTimeout`) membatalkan timer lama agar tidak menumpuk. |
+| `useState` | `DiaryContext.tsx`, `useDiarySearch.ts`, `index.tsx`, `create.tsx`, `settings.tsx` | Menyimpan state lokal/global, seperti daftar `entries`, `likedIds`, `compactMode`, `query`, `debouncedQuery`, `selectedMood`, `searchFocused`, input form (`title`, `date`, `body`, `mood`, `focused`), toggle `notifications`, dan `aboutVisible` (modal About). |
+| `useEffect` | `useDiarySearch.ts` | Membuat **debounce** pencarian: `debouncedQuery` baru diperbarui 350 ms setelah pengguna berhenti mengetik. *Cleanup function* (`clearTimeout`) membatalkan timer lama agar tidak menumpuk. |
 | `useMemo` | `DiaryContext.tsx`, `useDiarySearch.ts`, `useLikedEntries.ts` | Menghindari kalkulasi ulang yang tidak perlu: memoize `value` context, hasil `filteredEntries` (filter query + mood), dan `likedEntries` (diary yang di-like). |
 | `useCallback` | `DiaryContext.tsx`, `index.tsx`, `favorites.tsx` | Memoize fungsi `addEntry`, `toggleLike`, dan `getById` di context, serta `openDetail` di Home dan Favorites, supaya referensi fungsi stabil di antara render. |
-| `useContext` | `DiaryContext.tsx` (dibungkus `useDiary`) | Membaca state global dari `DiaryContext` tanpa *prop drilling*. Melempar error jika dipakai di luar `DiaryProvider`. |
+| `useRef` | `index.tsx` | Menyimpan referensi langsung ke komponen `TextInput` pada kolom Search. Digunakan untuk memanggil `.focus()` sehingga kolom pencarian dapat memperoleh fokus secara otomatis ketika ikon pencarian ditekan atau setelah tombol X digunakan untuk menghapus kata pencarian. Perubahan nilai `ref` tidak menyebabkan render ulang komponen. |
+| `useContext` | `DiaryContext.tsx` (dibungkus `useDiary`) | Membaca state global dari `DiaryContext` tanpa *prop drilling*. Melempar error jika digunakan di luar `DiaryProvider`. |
 
 ### Hooks dari Expo Router
 
@@ -114,21 +117,25 @@ diary-app6/
 ## 📸 Screenshot
 
 ### Home
-| Daftar diary | Pencarian (`sleepy`) | Filter mood  |
+
+| Daftar diary | Pencarian (`sleepy`) | Filter mood |
 |:---:|:---:|:---:|
 | <img src="screenshots/01-home.png" width="220"> | <img src="screenshots/02-home-search.png" width="220"> | <img src="screenshots/03-home-mood.png" width="220"> |
 
 ### Favorit & Detail
+
 | Like di Home | Detail diary | Halaman Favorites |
 |:---:|:---:|:---:|
 | <img src="screenshots/04-home-liked.png" width="220"> | <img src="screenshots/05-detail.png" width="220"> | <img src="screenshots/06-favorites.png" width="220"> |
 
 ### Create & Settings
+
 | Form Create | Home setelah menyimpan | Settings |
 |:---:|:---:|:---:|
 | <img src="screenshots/07-create.png" width="220"> | <img src="screenshots/08-home-after-create.png" width="220"> | <img src="screenshots/09-settings.png" width="220"> |
 
 ### About
+
 | Settings → About Diary App |
 |:---:|
 | <img src="screenshots/10-about.png" width="220"> |
@@ -140,6 +147,7 @@ Menekan kartu **About Diary App** menampilkan *modal* berisi teks *"Diary App 6 
 - Data diary hanya disimpan di memori (state React), sehingga **hilang saat aplikasi ditutup atau di-refresh**.
 - *Compact Mode* hanya memengaruhi daftar di halaman Home, bukan halaman Favorites.
 - Toggle *Notifications* di Settings baru berupa state tampilan, belum mengirim notifikasi sungguhan.
+- `useRef` digunakan untuk mengontrol fokus kolom Search dan tidak digunakan untuk menyimpan data diary.
 
 ## 🛠️ Teknologi
 
