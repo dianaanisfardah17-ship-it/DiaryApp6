@@ -119,7 +119,7 @@ diary-app6/
 |:---:|
 | <img src="screenshots/10-about.png" width="220"> |
 
-Menekan kartu **About Diary App** menampilkan `Alert` berisi: *"Diary App 6 - A place to save your beautiful memories. 🌷"* (dialog ini muncul di Android/iOS, tidak di versi web).
+Menekan kartu **About Diary App** menampilkan `Alert` berisi: *"Diary App 6 - A place to save your beautiful memories. 🌷"*.
 
 ## 🛠️ Teknologi
 
