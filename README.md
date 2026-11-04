@@ -1,13 +1,13 @@
 # 📖 Diary App 6
 
-Aplikasi diary mobile sederhana yang dibuat dengan **React Native + Expo (Expo Router)** dan **TypeScript**. Pengguna bisa menulis catatan harian lengkap dengan mood, mencari dan memfilter catatan, menandai favorit, melihat detail, serta mengatur tampilan (compact mode).
+Aplikasi diary mobile sederhana yang dibuat dengan **React Native + Expo (Expo Router)** dan **TypeScript**. Pengguna bisa menulis catatan harian lengkap dengan mood, mencari dan memfilter catatan, menandai favorit, melihat detail, serta mengatur tampilan daftar di Home (compact mode).
 
 ## 👤 Identitas
 
 | | |
 |---|---|
-| **Nama** | `[DIANA ANIS FARDAH]` |
-| **NIM** | `[2430511046]` |
+| **Nama** | Diana Anis Fardah |
+| **NIM** | 2430511046 |
 | **Program Studi** | Teknik Informatika |
 | **Universitas** | Universitas Muhammadiyah Sukabumi |
 
@@ -48,26 +48,40 @@ Setelah server jalan, pilih salah satu cara membuka aplikasi:
 | `npm run ios` | Menjalankan di iOS |
 | `npm run web` | Menjalankan di browser |
 
+## ✨ Fitur
+
+- **Home**: daftar diary, statistik (jumlah memori & favorit), pencarian, filter mood, dan tombol *Reset Filter*.
+- **Create**: form tambah diary (judul, tanggal `YYYY-MM-DD`, mood, isi cerita).
+- **Detail**: menampilkan isi diary lengkap dengan mood dan tombol favorit.
+- **Favorites**: daftar diary yang sudah di-like.
+- **Settings**: *Compact Mode* (mengubah tampilan kartu di Home), toggle *Notifications*, dan modal *About*.
+
 ## 🗂️ Struktur Folder
 
 ```
 diary-app6/
 ├── app/
 │   ├── _layout.tsx            # Root layout (DiaryProvider + Stack)
+│   ├── +html.tsx              # Konfigurasi HTML root (web)
+│   ├── +not-found.tsx         # Halaman 404
+│   ├── modal.tsx              # Modal bawaan template Expo
 │   ├── (tabs)/
 │   │   ├── _layout.tsx        # Bottom tab navigation
 │   │   ├── index.tsx          # Home: search, filter mood, daftar diary
 │   │   ├── favorites.tsx      # Daftar diary favorit
 │   │   ├── create.tsx         # Form tambah diary
-│   │   └── settings.tsx       # Pengaturan (compact mode, notifikasi)
+│   │   ├── settings.tsx       # Pengaturan (compact mode, notifikasi, About)
+│   │   └── two.tsx            # Tab bawaan template (tidak dipakai di navigasi)
 │   └── detail/[id].tsx        # Detail diary (dynamic route)
 └── src/
     ├── components/DiaryCard.tsx       # Komponen kartu diary
+    ├── constants/moods.ts             # Daftar mood + helper getMood
     ├── context/DiaryContext.tsx       # State global (Context API)
     ├── hooks/
     │   ├── useDiarySearch.ts          # Custom hook: search + filter mood
     │   └── useLikedEntries.ts         # Custom hook: daftar favorit
-    └── styles/tokens.ts               # Design tokens (warna, spacing, dll.)
+    ├── styles/tokens.ts               # Design tokens (warna, spacing, dll.)
+    └── utils/date.ts                  # formatDate & getToday
 ```
 
 ## 🪝 Penjelasan Hooks
@@ -76,10 +90,10 @@ diary-app6/
 
 | Hook | Digunakan di | Fungsi dalam project |
 |---|---|---|
-| `useState` | `DiaryContext.tsx`, `useDiarySearch.ts`, `create.tsx`, `settings.tsx` | Menyimpan state lokal/global: daftar `entries`, `likedIds`, `compactMode`, `query`, `debouncedQuery`, `selectedMood`, input form (`title`, `date`, `body`, `mood`), dan toggle `notifications`. |
+| `useState` | `DiaryContext.tsx`, `useDiarySearch.ts`, `index.tsx`, `create.tsx`, `settings.tsx` | Menyimpan state lokal/global: daftar `entries`, `likedIds`, `compactMode`, `query`, `debouncedQuery`, `selectedMood`, `searchFocused` (fokus kolom pencarian), input form (`title`, `date`, `body`, `mood`, `focused`), toggle `notifications`, dan `aboutVisible` (modal About). |
 | `useEffect` | `useDiarySearch.ts` | Membuat **debounce** pencarian: `debouncedQuery` baru diperbarui 350 ms setelah user berhenti mengetik. *Cleanup function* (`clearTimeout`) membatalkan timer lama agar tidak menumpuk. |
 | `useMemo` | `DiaryContext.tsx`, `useDiarySearch.ts`, `useLikedEntries.ts` | Menghindari kalkulasi ulang yang tidak perlu: memoize `value` context, hasil `filteredEntries` (filter query + mood), dan `likedEntries` (diary yang di-like). |
-| `useCallback` | `index.tsx`, `favorites.tsx` | Memoize fungsi `openDetail` supaya referensinya stabil di antara render dan tidak dibuat ulang tiap render. |
+| `useCallback` | `DiaryContext.tsx`, `index.tsx`, `favorites.tsx` | Memoize fungsi `addEntry`, `toggleLike`, dan `getById` di context, serta `openDetail` di Home dan Favorites, supaya referensi fungsi stabil di antara render. |
 | `useContext` | `DiaryContext.tsx` (dibungkus `useDiary`) | Membaca state global dari `DiaryContext` tanpa *prop drilling*. Melempar error jika dipakai di luar `DiaryProvider`. |
 
 ### Hooks dari Expo Router
@@ -119,7 +133,13 @@ diary-app6/
 |:---:|
 | <img src="screenshots/10-about.png" width="220"> |
 
-Menekan kartu **About Diary App** menampilkan `Alert` berisi: *"Diary App 6 - A place to save your beautiful memories. 🌷"*.
+Menekan kartu **About Diary App** menampilkan *modal* berisi teks *"Diary App 6 - A place to save your beautiful memories."*, nomor versi `Version 1.0.0`, dan tombol **Close**.
+
+## ⚠️ Catatan & Keterbatasan
+
+- Data diary hanya disimpan di memori (state React), sehingga **hilang saat aplikasi ditutup atau di-refresh**.
+- *Compact Mode* hanya memengaruhi daftar di halaman Home, bukan halaman Favorites.
+- Toggle *Notifications* di Settings baru berupa state tampilan, belum mengirim notifikasi sungguhan.
 
 ## 🛠️ Teknologi
 
