@@ -28,16 +28,6 @@ type DiaryContextType = {
 
 const DiaryContext = createContext<DiaryContextType | null>(null);
 
-// 6 MOOD UTAMA
-export const MOODS = [
-  { emoji: '😊', label: 'Happy', color: '#FFF0C9' },
-  { emoji: '😌', label: 'Calm', color: '#DFF1FF' },
-  { emoji: '😢', label: 'Sad', color: '#D9E7FF' },
-  { emoji: '😠', label: 'Angry', color: '#FFDADA' },
-  { emoji: '😰', label: 'Anxious', color: '#DDEBEF' },
-  { emoji: '😴', label: 'Tired', color: '#E9E7F5' },
-];
-
 const INITIAL_ENTRIES: DiaryEntry[] = [
   {
     id: 1,

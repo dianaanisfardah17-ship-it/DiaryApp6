@@ -20,18 +20,12 @@ import { getToday } from '../../src/utils/date';
 
 import {
   COLORS,
+  NO_OUTLINE,
   RADIUS,
   SHADOW,
   SPACE,
   TYPO,
 } from '../../src/styles/tokens';
-
-// Menghilangkan garis fokus hitam bawaan browser (web).
-// Tidak berpengaruh di Android/iOS.
-const NO_OUTLINE = Platform.select({
-  web: { outlineStyle: 'none', outlineWidth: 0 },
-  default: {},
-}) as object;
 
 type Field = 'title' | 'date' | 'body';
 

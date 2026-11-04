@@ -23,7 +23,7 @@ import {
 export default function FavoritesScreen() {
   const router = useRouter();
 
-  const { entries, likedIds, toggleLike } = useDiary();
+  const { entries, likedIds, toggleLike, compactMode } = useDiary();
 
   const { likedEntries, likedCount } = useLikedEntries(
     entries,
@@ -80,6 +80,7 @@ export default function FavoritesScreen() {
             preview={item.preview}
             mood={item.mood}
             liked={likedIds.has(item.id)}
+            compact={compactMode}
             onPress={() => openDetail(item.id)}
             onToggleLike={() => toggleLike(item.id)}
           />

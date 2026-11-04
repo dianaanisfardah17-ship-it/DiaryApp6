@@ -1,4 +1,5 @@
-import { useCallback, useState } from 'react';
+import type { ComponentRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import {
   FlatList,
@@ -39,6 +40,9 @@ const FILTERS = [
 export default function HomeScreen() {
   const router = useRouter();
 
+  // Referensi untuk mengontrol fokus Search
+  const searchRef = useRef<ComponentRef<typeof TextInput>>(null);
+
   const {
     entries,
     likedIds,
@@ -58,6 +62,11 @@ export default function HomeScreen() {
 
   const [searchFocused, setSearchFocused] = useState(false);
 
+  // Mengembalikan fokus ke kolom Search
+  const focusSearch = () => {
+    searchRef.current?.focus();
+  };
+
   const openDetail = useCallback(
     (id: number) => {
       router.push({
@@ -74,7 +83,7 @@ export default function HomeScreen() {
       <View style={styles.header}>
         <View>
           <Text style={styles.greeting}>
-            Hello, Diana! 
+            Hello, Diana!
           </Text>
 
           <Text style={styles.heading}>
@@ -133,13 +142,16 @@ export default function HomeScreen() {
           searchFocused && styles.searchRowFocused,
         ]}
       >
-        <Ionicons
-          name="search-outline"
-          size={20}
-          color={searchFocused ? COLORS.primary : COLORS.muted}
-        />
+        <Pressable onPress={focusSearch}>
+          <Ionicons
+            name="search-outline"
+            size={20}
+            color={searchFocused ? COLORS.primary : COLORS.muted}
+          />
+        </Pressable>
 
         <TextInput
+          ref={searchRef}
           value={query}
           onChangeText={setQuery}
           onFocus={() => setSearchFocused(true)}
@@ -147,10 +159,17 @@ export default function HomeScreen() {
           placeholder="Search your memories..."
           placeholderTextColor={COLORS.muted}
           style={[styles.search, NO_OUTLINE]}
+          returnKeyType="search"
         />
 
         {query.length > 0 && (
-          <Pressable onPress={() => setQuery('')}>
+          <Pressable
+            onPress={() => {
+              setQuery('');
+              searchRef.current?.focus();
+            }}
+            hitSlop={8}
+          >
             <Ionicons
               name="close-circle"
               size={20}
